@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: cafe-inventory
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: FLASK_DEBUG
+        value: "0"

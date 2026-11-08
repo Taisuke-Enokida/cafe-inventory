@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}商品管理 | 喫茶店 在庫管理{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <h1>商品管理</h1>
+    <a class="button" href="{{ url_for('products.create') }}">商品を登録</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>単位</th><th>発注点</th><th>状態</th><th>操作</th></tr></thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td data-label="商品コード">{{ product.code }}</td>
+            <td data-label="商品名">{{ product.name }}</td>
+            <td data-label="カテゴリ">{{ product.category }}</td>
+            <td data-label="単位">{{ product.unit }}</td>
+            <td data-label="発注点">{{ "%.3f"|format(product.reorder_point) }}</td>
+            <td data-label="状態">{{ "有効" if product.is_active else "無効" }}</td>
+            <td data-label="操作"><a class="button button-small button-secondary" href="{{ url_for('products.edit', product_id=product.id) }}">編集</a></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="empty-state">商品が登録されていません。</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

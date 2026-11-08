@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - "feature/**"
+
+permissions:
+  contents: read
+
+jobs:
+  quality-and-sqlite:
+    name: quality-and-sqlite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format
+        run: ruff format --check .
+      - name: Unit and SQLite tests
+        env:
+          SECRET_KEY: ci-test-key-not-a-secret
+          DATABASE_URL: sqlite:///ci-inventory.db
+          FLASK_DEBUG: "0"
+        run: pytest -m "not postgres"
+
+  postgres-integration:
+    name: postgres-integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: inventory
+          POSTGRES_PASSWORD: inventory
+          POSTGRES_DB: inventory_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inventory -d inventory_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: PostgreSQL integration tests
+        env:
+          SECRET_KEY: ci-test-key-not-a-secret
+          DATABASE_URL: sqlite:///unused-ci-db.db
+          TEST_DATABASE_URL: postgresql+psycopg://inventory:inventory@localhost:5432/inventory_test
+          FLASK_DEBUG: "0"
+        run: pytest -m postgres

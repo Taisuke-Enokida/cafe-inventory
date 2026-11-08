@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}入出庫履歴 | 喫茶店 在庫管理{% endblock %}
+{% block content %}
+  <h1>入出庫履歴</h1>
+  <p>履歴は削除・上書きされません。訂正は理由を添えた差分として追加します。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>日時</th><th>商品</th><th>種別</th><th>数量差分</th><th>記録者</th><th>訂正理由</th></tr></thead>
+      <tbody>
+        {% for movement in movements %}
+          <tr>
+            <td data-label="日時">{{ movement.occurred_at.strftime("%Y-%m-%d %H:%M") }}</td>
+            <td data-label="商品">{{ movement.product.name }} ({{ movement.product.code }})</td>
+            <td data-label="種別">{{ {"receipt": "入庫", "usage": "使用", "waste": "廃棄", "correction": "訂正"}[movement.kind] }}</td>
+            <td data-label="数量差分">{{ "%+.3f"|format(movement.quantity_delta) }} {{ movement.product.unit }}</td>
+            <td data-label="記録者">{{ movement.actor.username }}</td>
+            <td data-label="訂正理由">{{ movement.reason or "—" }}</td>
+            <td data-label="訂正">
+              {% if movement.kind != "correction" %}
+                <details>
+                  <summary>訂正を追加</summary>
+                  <form action="{{ url_for('inventory.correct', movement_id=movement.id) }}" method="post" class="stack-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="product_id" value="{{ movement.product_id }}">
+                    <label for="correction-{{ movement.id }}">在庫への訂正差分（+ / -）</label>
+                    <input id="correction-{{ movement.id }}" name="quantity_delta" type="number" step="0.001" required>
+                    <label for="reason-{{ movement.id }}">訂正理由</label>
+                    <input id="reason-{{ movement.id }}" name="reason" maxlength="500" required>
+                    <button class="button button-small" type="submit">訂正を記録</button>
+                  </form>
+                </details>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="empty-state">履歴はまだありません。</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

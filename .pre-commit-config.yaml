@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff
+        args: [--fix]
+        stages: [pre-commit]
+      - id: ruff-format
+        stages: [pre-commit]
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: python -m pytest
+        language: python
+        additional_dependencies:
+          - "Flask>=3.1,<4"
+          - "Flask-Login>=0.6,<1"
+          - "Flask-Migrate>=4.1,<5"
+          - "Flask-SQLAlchemy>=3.1,<4"
+          - "Flask-WTF>=1.2,<2"
+          - "psycopg[binary]>=3.2,<4"
+          - "pytest>=8.3,<9"
+          - "python-dotenv>=1.0,<2"
+        pass_filenames: false
+        stages: [pre-push]

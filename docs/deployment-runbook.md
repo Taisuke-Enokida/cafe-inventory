@@ -40,4 +40,8 @@ Render公式のデプロイ資料は、Git接続サービスの自動デプロ�
 
 GitHubには `cafe-inventory` repository を作成し、ユーザー承認を得てpublicに変更した。`main`、`develop`、`feature/initial-inventory` をpush済みで、各ブランチのCIは成功している。`main` と `develop` にはPR必須、`quality-and-sqlite` / `postgres-integration` 必須、最新状態必須、管理者にも適用、force push・削除禁止を設定済み。承認者数は0（PR必須だが個人開発で自己レビューを要求しない）。
 
-Neonプロジェクト作成/接続、本番マイグレーション、Renderサービス作成/費用発生、本番URL検証は未実施。これらは個別に内容と影響を提示し、ユーザー承認後に実施する。
+ユーザー承認のもとNeonのFreeプロジェクト `cafe-inventory` をSingaporeリージョンに作成し、`production` ブランチを確認済み。新規空スキーマであることを確認して初期マイグレーション `fb246f6f8b39` を適用し、アプリ用3テーブルとAlembic headを確認した。接続情報はチャット、ソース、ログ、CIへ記録しない。
+
+ユーザー承認のもとRender Free Web Serviceを `main` から作成した（`https://cafe-inventory-54fe.onrender.com`）。初回ビルドは `gunicorn wsgi` が `wsgi.application` を見つけられず失敗した。`wsgi.py` で `application` と `app` を同一アプリとして公開する修正と回帰テストを作成済みだが、CI、PR、mainへの反映、Render再デプロイは未完了。修正反映後に再デプロイし、`/health` とログインを確認する。既存の別Renderサービスには変更していない。
+
+Render DashboardでAuto-Deployを **After CI Checks Pass** に設定済み（`render.yaml` はCIチェックの検出前に自動デプロイしない `autoDeploy: false` のまま）。本番管理者アカウントは未作成。秘密値はローカルのGit無視対象 `.env` とRenderの環境変数だけで管理し、会話やソースへ記録しない。

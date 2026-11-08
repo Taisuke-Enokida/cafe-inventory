@@ -38,6 +38,6 @@ Render公式のデプロイ資料は、Git接続サービスの自動デプロ�
 
 ## 現状の未実施事項
 
-GitHubには `cafe-inventory` private repository を作成し、`main`、`develop`、`feature/initial-inventory` をpush済み。初回CIは3ブランチ全て成功した。ブランチ保護APIとrulesets APIは、private repositoryへの適用にGitHub Proが必要という403応答で拒否された。公開化は行っていないため、現状はmain/developのPR必須・CI必須をGitHub側で強制できていない。GitHub Proへの変更または公開化の承認後に設定する。公開化はソースと履歴を全公開するため、明示承認なしに行わない。
+GitHubには `cafe-inventory` repository を作成し、ユーザー承認を得てpublicに変更した。`main`、`develop`、`feature/initial-inventory` をpush済みで、各ブランチのCIは成功している。`main` と `develop` にはPR必須、`quality-and-sqlite` / `postgres-integration` 必須、最新状態必須、管理者にも適用、force push・削除禁止を設定済み。承認者数は0（PR必須だが個人開発で自己レビューを要求しない）。
 
 Neonプロジェクト作成/接続、本番マイグレーション、Renderサービス作成/費用発生、本番URL検証は未実施。これらは個別に内容と影響を提示し、ユーザー承認後に実施する。

@@ -184,7 +184,7 @@ def test_production_requires_secret_and_postgresql_url(monkeypatch):
 def test_production_configuration_disables_debug_and_requires_ssl(monkeypatch):
     monkeypatch.setenv("RENDER", "true")
     monkeypatch.setenv("SECRET_KEY", "production-test-key")
-    monkeypatch.setenv("DATABASE_URL", "postgresql://user:password@db.example/inventory")
+    monkeypatch.setenv("DATABASE_URL", "postgresql://db.example/inventory")
     application = create_app({"DEBUG": True, "TESTING": True})
 
     assert application.config["DEBUG"] is False
